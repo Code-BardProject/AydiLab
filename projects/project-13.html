@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodDash - Food Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+        
+        /* Header */
+        .header {
+            background: #1e293b;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .address-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 25px;
+            color: rgba(255,255,255,0.7);
+        }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .cart-btn {
+            padding: 10px 20px;
+            background: #f97316;
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Main */
+        .main { padding: 90px 30px 30px; max-width: 1400px; margin: 0 auto; }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .category:hover, .category.active {
+            background: #f97316;
+            transform: translateY(-3px);
+        }
+        .category-icon { font-size: 2rem; }
+        .category-name { font-size: 0.9rem; font-weight: 500; }
+
+        /* Restaurants */
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .restaurant-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        .restaurant-card:hover {
+            transform: translateY(-8px);
+            border-color: #f97316;
+        }
+        .restaurant-image {
+            height: 180px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+        .delivery-time {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .restaurant-info { padding: 20px; }
+        .restaurant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .restaurant-name { font-size: 1.2rem; font-weight: 700; }
+        .restaurant-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        .restaurant-meta {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .popular-items {
+            display: flex;
+            gap: 10px;
+        }
+        .item-tag {
+            padding: 6px 12px;
+            background: rgba(249, 115, 22, 0.15);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #f97316;
+        }
+
+        /* Order Tracking Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-title { font-size: 1.5rem; margin-bottom: 30px; }
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .step-dot.active { background: #f97316; animation: pulse 2s infinite; }
+        .step-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+        }
+        .order-details {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .detail-row:last-child { margin-bottom: 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-weight: 700; }
+        .close-btn {
+            padding: 12px 30px;
+            background: #f97316;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .address-bar { display: none; }
+            .restaurants-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🍔 FoodDash</div>
+        <div class="address-bar">
+            <span>📍</span>
+            <span>123 Main Street, Apt 4B</span>
+        </div>
+        <div class="header-actions">
+            <button class="cart-btn" onclick="openModal()">🛒 Cart (2)</button>
+            <a href="../index.html#projects" class="back-btn">Back</a>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="categories">
+            <div class="category active">
+                <span class="category-icon">🍕</span>
+                <span class="category-name">Pizza</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🍔</span>
+                <span class="category-name">Burgers</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🍣</span>
+                <span class="category-name">Sushi</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🥗</span>
+                <span class="category-name">Healthy</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🍜</span>
+                <span class="category-name">Asian</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🌮</span>
+                <span class="category-name">Mexican</span>
+            </div>
+            <div class="category">
+                <span class="category-icon">🍰</span>
+                <span class="category-name">Desserts</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Popular Near You</h2>
+        <div class="restaurants-grid">
+            <div class="restaurant-card" onclick="alert('Menu opened!')">
+                <div class="restaurant-image">
+                    🍕
+                    <span class="delivery-time">⏱ 25-35 min</span>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-header">
+                        <span class="restaurant-name">Tony's Pizzeria</span>
+                        <span class="restaurant-rating">⭐ 4.8</span>
+                    </div>
+                    <div class="restaurant-meta">Italian • Pizza • $$ • 2.3 km away</div>
+                    <div class="popular-items">
+                        <span class="item-tag">Pepperoni</span>
+                        <span class="item-tag">Margherita</span>
+                        <span class="item-tag">Supreme</span>
+                    </div>
+                </div>
+            </div>
+            <div class="restaurant-card" onclick="alert('Menu opened!')">
+                <div class="restaurant-image" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    🍔
+                    <span class="delivery-time">⏱ 20-30 min</span>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-header">
+                        <span class="restaurant-name">Burger King</span>
+                        <span class="restaurant-rating">⭐ 4.5</span>
+                    </div>
+                    <div class="restaurant-meta">American • Burgers • $ • 1.8 km away</div>
+                    <div class="popular-items">
+                        <span class="item-tag">Whopper</span>
+                        <span class="item-tag">Fries</span>
+                        <span class="item-tag">Shake</span>
+                    </div>
+                </div>
+            </div>
+            <div class="restaurant-card" onclick="alert('Menu opened!')">
+                <div class="restaurant-image" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                    🍣
+                    <span class="delivery-time">⏱ 35-45 min</span>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-header">
+                        <span class="restaurant-name">Sakura Sushi</span>
+                        <span class="restaurant-rating">⭐ 4.9</span>
+                    </div>
+                    <div class="restaurant-meta">Japanese • Sushi • $$$ • 3.1 km away</div>
+                    <div class="popular-items">
+                        <span class="item-tag">Salmon Roll</span>
+                        <span class="item-tag">Tuna</span>
+                        <span class="item-tag">Bento</span>
+                    </div>
+                </div>
+            </div>
+            <div class="restaurant-card" onclick="alert('Menu opened!')">
+                <div class="restaurant-image" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    🥗
+                    <span class="delivery-time">⏱ 15-25 min</span>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-header">
+                        <span class="restaurant-name">Green Garden</span>
+                        <span class="restaurant-rating">⭐ 4.7</span>
+                    </div>
+                    <div class="restaurant-meta">Healthy • Salads • $$ • 1.2 km away</div>
+                    <div class="popular-items">
+                        <span class="item-tag">Caesar</span>
+                        <span class="item-tag">Bowl</span>
+                        <span class="item-tag">Smoothie</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <h2 class="modal-title">📦 Track Your Order</h2>
+            <div class="tracking-steps">
+                <div class="step">
+                    <div class="step-dot">✓</div>
+                    <span class="step-label">Ordered</span>
+                </div>
+                <div class="step">
+                    <div class="step-dot">✓</div>
+                    <span class="step-label">Preparing</span>
+                </div>
+                <div class="step">
+                    <div class="step-dot active">🚗</div>
+                    <span class="step-label">On the way</span>
+                </div>
+                <div class="step">
+                    <div class="step-dot" style="background: rgba(255,255,255,0.1);">🏠</div>
+                    <span class="step-label">Delivered</span>
+                </div>
+            </div>
+            <div class="order-details">
+                <div class="detail-row">
+                    <span>Order #45892</span>
+                    <span style="color: #f97316;">On the way</span>
+                </div>
+                <div class="detail-row">
+                    <span>Pepperoni Pizza x2</span>
+                    <span>$29.98</span>
+                </div>
+                <div class="detail-row">
+                    <span>Delivery Fee</span>
+                    <span>$2.99</span>
+                </div>
+                <div class="detail-row">
+                    <span>Total</span>
+                    <span style="color: #f97316;">$32.97</span>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('orderModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+        
+        document.querySelectorAll('.category').forEach(cat => {
+            cat.addEventListener('click', function() {
+                document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

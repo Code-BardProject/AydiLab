@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveRent - Car Rental System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f59e0b;
+        }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #f59e0b; }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 60px 40px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 15px; color: #000; }
+        .hero p { font-size: 1.1rem; color: rgba(0,0,0,0.7); margin-bottom: 30px; }
+
+        /* Search Form */
+        .search-section {
+            max-width: 1000px;
+            margin: -40px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .search-form {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .search-btn {
+            padding: 14px 30px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: transform 0.3s;
+        }
+        .search-btn:hover { transform: scale(1.02); }
+
+        /* Filters */
+        .filters {
+            padding: 40px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #f59e0b;
+            color: #000;
+            border-color: #f59e0b;
+        }
+
+        /* Cars Grid */
+        .cars-section {
+            padding: 0 40px 60px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .car-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s;
+        }
+        .car-card:hover {
+            transform: translateY(-10px);
+            border-color: #f59e0b;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+        }
+        .car-image {
+            height: 200px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+        }
+        .car-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 6px 12px;
+            background: #f59e0b;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #000;
+        }
+        .car-info { padding: 25px; }
+        .car-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+        .car-specs {
+            display: flex;
+            gap: 15px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .car-features {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .car-feature {
+            padding: 6px 12px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #f59e0b;
+        }
+        .car-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .car-price { font-size: 1.5rem; font-weight: 700; color: #f59e0b; }
+        .car-price span { font-size: 0.9rem; color: rgba(255,255,255,0.5); font-weight: 400; }
+        .rent-btn {
+            padding: 12px 25px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .rent-btn:hover { transform: scale(1.05); }
+
+        /* Booking Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-title { font-size: 1.5rem; margin-bottom: 20px; }
+        .car-preview {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        .booking-details {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .booking-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .booking-row:last-child { margin-bottom: 0; }
+        .booking-row.total {
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .confirm-btn {
+            width: 100%;
+            padding: 16px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .cancel-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .search-form { grid-template-columns: 1fr; }
+            .cars-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🚗 DriveRent</div>
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Vehicles</a>
+            <a href="#">Locations</a>
+            <a href="#">About</a>
+        </nav>
+        <div class="header-actions">
+            <a href="../index.html#projects" class="back-btn">← Back to Projects</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Find Your Perfect Ride</h1>
+        <p>Choose from 10,000+ vehicles. Best prices guaranteed.</p>
+    </section>
+
+    <section class="search-section">
+        <div class="search-form">
+            <div class="form-group">
+                <label>📍 Pick-up Location</label>
+                <input type="text" placeholder="City, Airport, or Address">
+            </div>
+            <div class="form-group">
+                <label>📅 Pick-up Date</label>
+                <input type="date">
+            </div>
+            <div class="form-group">
+                <label>📅 Return Date</label>
+                <input type="date">
+            </div>
+            <button class="search-btn" onclick="alert('Found 234 available vehicles!')">Search Cars</button>
+        </div>
+    </section>
+
+    <section class="filters">
+        <button class="filter-btn active">All Types</button>
+        <button class="filter-btn">🚙 SUV</button>
+        <button class="filter-btn">🚗 Sedan</button>
+        <button class="filter-btn">🏎️ Sports</button>
+        <button class="filter-btn">🚐 Van</button>
+        <button class="filter-btn">⚡ Electric</button>
+        <button class="filter-btn">🛻 Truck</button>
+    </section>
+
+    <section class="cars-section">
+        <h2 class="section-title">Available Vehicles</h2>
+        <div class="cars-grid">
+            <div class="car-card">
+                <div class="car-image">
+                    🚙
+                    <span class="car-badge">POPULAR</span>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Tesla Model Y</h3>
+                    <div class="car-specs">
+                        <span>⚡ Electric</span>
+                        <span>🚪 5 Seats</span>
+                        <span>📦 SUV</span>
+                    </div>
+                    <div class="car-features">
+                        <span class="car-feature">Autopilot</span>
+                        <span class="car-feature">Panoramic Roof</span>
+                        <span class="car-feature">Premium Audio</span>
+                    </div>
+                    <div class="car-footer">
+                        <div class="car-price">$89<span>/day</span></div>
+                        <button class="rent-btn" onclick="openModal('Tesla Model Y', '$89')">Rent Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="car-card">
+                <div class="car-image">
+                    🚗
+                    <span class="car-badge">LUXURY</span>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">BMW 5 Series</h3>
+                    <div class="car-specs">
+                        <span>⛽ Hybrid</span>
+                        <span>🚪 5 Seats</span>
+                        <span>🏢 Sedan</span>
+                    </div>
+                    <div class="car-features">
+                        <span class="car-feature">Leather Seats</span>
+                        <span class="car-feature">Navigation</span>
+                        <span class="car-feature">Heated Seats</span>
+                    </div>
+                    <div class="car-footer">
+                        <div class="car-price">$129<span>/day</span></div>
+                        <button class="rent-btn" onclick="openModal('BMW 5 Series', '$129')">Rent Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="car-card">
+                <div class="car-image">
+                    🏎️
+                    <span class="car-badge">SPORT</span>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Porsche 911</h3>
+                    <div class="car-specs">
+                        <span>⛽ Gas</span>
+                        <span>🚪 2 Seats</span>
+                        <span>🏎️ Coupe</span>
+                    </div>
+                    <div class="car-features">
+                        <span class="car-feature">Sport Mode</span>
+                        <span class="car-feature">Convertible</span>
+                        <span class="car-feature">BOSE Audio</span>
+                    </div>
+                    <div class="car-footer">
+                        <div class="car-price">$299<span>/day</span></div>
+                        <button class="rent-btn" onclick="openModal('Porsche 911', '$299')">Rent Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="car-card">
+                <div class="car-image">
+                    🚐
+                    <span class="car-badge">FAMILY</span>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Mercedes V-Class</h3>
+                    <div class="car-specs">
+                        <span>⛽ Diesel</span>
+                        <span>🚪 8 Seats</span>
+                        <span>🚐 Van</span>
+                    </div>
+                    <div class="car-features">
+                        <span class="car-feature">Extra Space</span>
+                        <span class="car-feature">Entertainment</span>
+                        <span class="car-feature">Cruise Control</span>
+                    </div>
+                    <div class="car-footer">
+                        <div class="car-price">$199<span>/day</span></div>
+                        <button class="rent-btn" onclick="openModal('Mercedes V-Class', '$199')">Rent Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Confirm Booking</h2>
+            <div class="car-preview" id="modalCarEmoji">🚙</div>
+            <h3 id="modalCarName">Tesla Model Y</h3>
+            <div class="booking-details">
+                <div class="booking-row">
+                    <span>Daily Rate</span>
+                    <span id="modalDailyRate">$89</span>
+                </div>
+                <div class="booking-row">
+                    <span>Duration</span>
+                    <span>3 days</span>
+                </div>
+                <div class="booking-row">
+                    <span>Insurance</span>
+                    <span>Included</span>
+                </div>
+                <div class="booking-row total">
+                    <span>Total</span>
+                    <span id="modalTotal">$267</span>
+                </div>
+            </div>
+            <button class="confirm-btn" onclick="confirmBooking()">Confirm & Pay</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal(carName, price) {
+            document.getElementById('modalCarName').textContent = carName;
+            document.getElementById('modalDailyRate').textContent = price;
+            
+            const priceNum = parseInt(price.replace('$', ''));
+            document.getElementById('modalTotal').textContent = '$' + (priceNum * 3);
+            
+            const emojis = {'Tesla Model Y': '🚙', 'BMW 5 Series': '🚗', 'Porsche 911': '🏎️', 'Mercedes V-Class': '🚐'};
+            document.getElementById('modalCarEmoji').textContent = emojis[carName] || '🚗';
+            
+            document.getElementById('bookingModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('bookingModal').classList.remove('active');
+        }
+        
+        function confirmBooking() {
+            alert('🚗 Booking Confirmed!\n\nYour reservation has been confirmed. Check your email for details.');
+            closeModal();
+        }
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

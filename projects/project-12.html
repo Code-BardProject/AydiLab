@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetPro - Sports Betting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .balance-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 20px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 10px;
+        }
+        .balance-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+        .balance-amount { font-size: 1.3rem; font-weight: 700; color: #22c55e; }
+        .deposit-btn {
+            padding: 10px 20px;
+            background: #22c55e;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        /* Sports Nav */
+        .sports-nav {
+            display: flex;
+            gap: 10px;
+            padding: 20px 30px;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .sport-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 25px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .sport-tab:hover, .sport-tab.active {
+            background: #22c55e;
+            color: #000;
+        }
+
+        /* Main */
+        .main { padding: 30px; max-width: 1400px; margin: 0 auto; }
+        
+        /* Live Matches */
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .match-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .league-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.6);
+        }
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: #ef4444;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .team-name { font-size: 1.2rem; font-weight: 600; }
+        .match-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        .odds-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .odd-box {
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .odd-box:hover { border-color: #22c55e; }
+        .odd-box.selected {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .odd-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+        .odd-value { font-size: 1.5rem; font-weight: 700; }
+
+        /* Bet Slip */
+        .bet-slip {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 350px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .bet-slip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .bet-slip-title { font-size: 1.2rem; font-weight: 700; }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .bet-item {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .bet-match { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-bottom: 5px; }
+        .bet-selection { font-weight: 600; margin-bottom: 5px; }
+        .bet-odd { color: #22c55e; font-weight: 700; }
+        .bet-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            margin-top: 15px;
+        }
+        .bet-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 15px;
+        }
+        .place-bet-btn {
+            width: 100%;
+            padding: 15px;
+            background: #22c55e;
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1200px) {
+            .bet-slip { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">⚽ BetPro</div>
+        <div style="display: flex; align-items: center;">
+            <div class="balance-box">
+                <div>
+                    <div class="balance-label">Balance</div>
+                    <div class="balance-amount">$1,250.00</div>
+                </div>
+            </div>
+            <button class="deposit-btn">+ Deposit</button>
+            <a href="../index.html#projects" class="back-btn">Back</a>
+        </div>
+    </header>
+
+    <nav class="sports-nav">
+        <button class="sport-tab active">⚽ Soccer</button>
+        <button class="sport-tab">🏀 Basketball</button>
+        <button class="sport-tab">🎾 Tennis</button>
+        <button class="sport-tab">🏈 Football</button>
+        <button class="sport-tab">🏒 Hockey</button>
+        <button class="sport-tab">⚾ Baseball</button>
+    </nav>
+
+    <main class="main">
+        <h2 class="section-title">🔴 Live Matches</h2>
+        
+        <div class="match-card">
+            <div class="match-header">
+                <div class="league-info">
+                    <span>🏆</span>
+                    <span>UEFA Champions League</span>
+                </div>
+                <div class="live-badge">● LIVE 67'</div>
+            </div>
+            <div class="match-teams">
+                <div class="team">
+                    <div class="team-logo">🔴</div>
+                    <span class="team-name">Manchester United</span>
+                </div>
+                <div class="match-score">2 - 1</div>
+                <div class="team">
+                    <span class="team-name">Real Madrid</span>
+                    <div class="team-logo">⚪</div>
+                </div>
+            </div>
+            <div class="odds-grid">
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">1 (Home)</div>
+                    <div class="odd-value">2.45</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">X (Draw)</div>
+                    <div class="odd-value">3.20</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">2 (Away)</div>
+                    <div class="odd-value">2.85</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="match-card">
+            <div class="match-header">
+                <div class="league-info">
+                    <span>⚽</span>
+                    <span>Premier League</span>
+                </div>
+                <div class="live-badge">● LIVE 34'</div>
+            </div>
+            <div class="match-teams">
+                <div class="team">
+                    <div class="team-logo">🔵</div>
+                    <span class="team-name">Chelsea</span>
+                </div>
+                <div class="match-score">0 - 0</div>
+                <div class="team">
+                    <span class="team-name">Arsenal</span>
+                    <div class="team-logo">⚫</div>
+                </div>
+            </div>
+            <div class="odds-grid">
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">1 (Home)</div>
+                    <div class="odd-value">1.95</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">X (Draw)</div>
+                    <div class="odd-value">3.40</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">2 (Away)</div>
+                    <div class="odd-value">3.80</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">📅 Upcoming Matches</h2>
+        
+        <div class="match-card">
+            <div class="match-header">
+                <div class="league-info">
+                    <span>⚽</span>
+                    <span>La Liga - Tomorrow 20:00</span>
+                </div>
+            </div>
+            <div class="match-teams">
+                <div class="team">
+                    <div class="team-logo">🔵</div>
+                    <span class="team-name">Barcelona</span>
+                </div>
+                <div class="match-score" style="color: rgba(255,255,255,0.3);">vs</div>
+                <div class="team">
+                    <span class="team-name">Atletico Madrid</span>
+                    <div class="team-logo">🔴⚪</div>
+                </div>
+            </div>
+            <div class="odds-grid">
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">1 (Home)</div>
+                    <div class="odd-value">1.75</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">X (Draw)</div>
+                    <div class="odd-value">3.50</div>
+                </div>
+                <div class="odd-box" onclick="selectOdd(this)">
+                    <div class="odd-label">2 (Away)</div>
+                    <div class="odd-value">4.20</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="bet-slip">
+        <div class="bet-slip-header">
+            <span class="bet-slip-title">🎫 Bet Slip</span>
+            <button class="clear-btn">Clear</button>
+        </div>
+        <div id="betItems">
+            <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">
+                Select odds to add bets
+            </div>
+        </div>
+        <input type="number" class="bet-input" placeholder="Enter stake amount" value="50">
+        <div class="bet-total">
+            <span>Potential Win:</span>
+            <span style="color: #22c55e; font-weight: 700; font-size: 1.2rem;">$0.00</span>
+        </div>
+        <button class="place-bet-btn" onclick="placeBet()">Place Bet</button>
+    </div>
+
+    <script>
+        let selectedBets = [];
+        
+        function selectOdd(element) {
+            element.parentElement.querySelectorAll('.odd-box').forEach(box => box.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const label = element.querySelector('.odd-label').textContent;
+            const value = element.querySelector('.odd-value').textContent;
+            const match = element.closest('.match-card').querySelector('.team-name').textContent;
+            
+            selectedBets = [{match, label, value}];
+            updateBetSlip();
+        }
+        
+        function updateBetSlip() {
+            const container = document.getElementById('betItems');
+            if (selectedBets.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">Select odds to add bets</div>';
+                return;
+            }
+            
+            container.innerHTML = selectedBets.map(bet => `
+                <div class="bet-item">
+                    <div class="bet-match">${bet.match}</div>
+                    <div class="bet-selection">${bet.label}</div>
+                    <div class="bet-odd">Odds: ${bet.value}</div>
+                </div>
+            `).join('');
+        }
+        
+        function placeBet() {
+            if (selectedBets.length === 0) {
+                alert('Please select odds first!');
+                return;
+            }
+            alert('🎉 Bet placed successfully!\n\nGood luck! 🍀');
+        }
+        
+        document.querySelectorAll('.sport-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank - Online Banking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .nav-section { margin-bottom: 30px; }
+        .nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 15px;
+            padding-left: 15px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 5px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+        .nav-icon { font-size: 1.3rem; }
+        .back-link {
+            margin-top: auto;
+            padding: 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .welcome h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .welcome p { color: rgba(255,255,255,0.5); }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .notification-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.2rem;
+            position: relative;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .credit-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            height: 220px;
+        }
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        .card-bank { font-weight: 600; opacity: 0.9; }
+        .card-type { font-size: 1.5rem; }
+        .card-number {
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+            font-family: monospace;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+        .card-label { font-size: 0.75rem; opacity: 0.7; margin-bottom: 5px; }
+        .card-value { font-weight: 600; }
+        .balance-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .balance-label { color: rgba(255,255,255,0.5); }
+        .balance-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .balance-change {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #10b981;
+            font-size: 0.9rem;
+        }
+        .balance-change.negative { color: #ef4444; }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .action-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .action-card:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+        }
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 15px;
+        }
+        .action-title { font-weight: 600; margin-bottom: 5px; }
+        .action-desc { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+
+        /* Transactions */
+        .transactions-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .transactions-title { font-size: 1.2rem; font-weight: 600; }
+        .view-all {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .transaction {
+            display: flex;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .transaction:last-child { border-bottom: none; }
+        .transaction-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 18px;
+        }
+        .transaction-icon.blue { background: rgba(59, 130, 246, 0.15); }
+        .transaction-icon.green { background: rgba(16, 185, 129, 0.15); }
+        .transaction-icon.red { background: rgba(239, 68, 68, 0.15); }
+        .transaction-icon.purple { background: rgba(139, 92, 246, 0.15); }
+        .transaction-info { flex: 1; }
+        .transaction-name { font-weight: 600; margin-bottom: 5px; }
+        .transaction-date { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .transaction-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .transaction-amount.positive { color: #10b981; }
+        .transaction-amount.negative { color: #ef4444; }
+
+        /* Transfer Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .modal-title { font-size: 1.4rem; font-weight: 600; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .form-input:focus { border-color: #3b82f6; }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .submit-btn:hover { transform: scale(1.02); }
+
+        @media (max-width: 1200px) {
+            .cards-section { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .quick-actions { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🏦</div>
+                SecureBank
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Main</div>
+                <div class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">💸</span>
+                    Transfer
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    Transactions
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">💳</span>
+                    Cards
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Settings</div>
+                <div class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    Profile
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🔒</span>
+                    Security
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">❓</span>
+                    Help
+                </div>
+            </div>
+            <a href="../index.html#projects" class="back-link">← Back to Projects</a>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="welcome">
+                    <h1>Welcome back, John! 👋</h1>
+                    <p>Here's your financial overview for today</p>
+                </div>
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        🔔
+                        <span class="notification-badge"></span>
+                    </button>
+                    <div class="user-menu">
+                        <div class="user-avatar">👨</div>
+                        <span>John Smith</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="cards-section">
+                <div class="credit-card">
+                    <div class="card-header">
+                        <span class="card-bank">SecureBank</span>
+                        <span class="card-type">💳</span>
+                    </div>
+                    <div class="card-number">•••• •••• •••• 4582</div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="card-label">Card Holder</div>
+                            <div class="card-value">JOHN SMITH</div>
+                        </div>
+                        <div>
+                            <div class="card-label">Expires</div>
+                            <div class="card-value">12/28</div>
+                        </div>
+                        <div>
+                            <div class="card-label">CVC</div>
+                            <div class="card-value">•••</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="balance-card">
+                    <div class="balance-header">
+                        <span class="balance-label">Total Balance</span>
+                        <div class="balance-icon">💰</div>
+                    </div>
+                    <div class="balance-amount">$24,562.80</div>
+                    <div class="balance-change">
+                        <span>↑ 2.4%</span>
+                        <span style="color: rgba(255,255,255,0.5);">from last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="action-card" onclick="openModal()">
+                    <div class="action-icon">↗️</div>
+                    <div class="action-title">Send Money</div>
+                    <div class="action-desc">Transfer to anyone</div>
+                </div>
+                <div class="action-card" onclick="openModal()">
+                    <div class="action-icon">📱</div>
+                    <div class="action-title">Mobile Top-up</div>
+                    <div class="action-desc">Recharge instantly</div>
+                </div>
+                <div class="action-card" onclick="openModal()">
+                    <div class="action-icon">📄</div>
+                    <div class="action-title">Pay Bills</div>
+                    <div class="action-desc">Utilities & more</div>
+                </div>
+                <div class="action-card" onclick="openModal()">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">Analytics</div>
+                    <div class="action-desc">View reports</div>
+                </div>
+            </div>
+
+            <div class="transactions-card">
+                <div class="transactions-header">
+                    <h3 class="transactions-title">Recent Transactions</h3>
+                    <a href="#" class="view-all">View All →</a>
+                </div>
+                <div class="transaction-list">
+                    <div class="transaction">
+                        <div class="transaction-icon red">🛒</div>
+                        <div class="transaction-info">
+                            <div class="transaction-name">Amazon Purchase</div>
+                            <div class="transaction-date">Today, 2:34 PM</div>
+                        </div>
+                        <div class="transaction-amount negative">-$127.50</div>
+                    </div>
+                    <div class="transaction">
+                        <div class="transaction-icon green">💰</div>
+                        <div class="transaction-info">
+                            <div class="transaction-name">Salary Deposit</div>
+                            <div class="transaction-date">Yesterday</div>
+                        </div>
+                        <div class="transaction-amount positive">+$5,200.00</div>
+                    </div>
+                    <div class="transaction">
+                        <div class="transaction-icon red">🍕</div>
+                        <div class="transaction-info">
+                            <div class="transaction-name">Uber Eats</div>
+                            <div class="transaction-date">Mar 28, 6:15 PM</div>
+                        </div>
+                        <div class="transaction-amount negative">-$34.20</div>
+                    </div>
+                    <div class="transaction">
+                        <div class="transaction-icon blue">⚡</div>
+                        <div class="transaction-info">
+                            <div class="transaction-name">Electric Bill</div>
+                            <div class="transaction-date">Mar 27, 9:00 AM</div>
+                        </div>
+                        <div class="transaction-amount negative">-$145.80</div>
+                    </div>
+                    <div class="transaction">
+                        <div class="transaction-icon purple">🏥</div>
+                        <div class="transaction-info">
+                            <div class="transaction-name">Health Insurance</div>
+                            <div class="transaction-date">Mar 26, 10:30 AM</div>
+                        </div>
+                        <div class="transaction-amount negative">-$299.00</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Money</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form onsubmit="handleTransfer(event)">
+                <div class="form-group">
+                    <label class="form-label">Recipient Account</label>
+                    <input type="text" class="form-input" placeholder="Enter account number or email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" placeholder="$0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Note (Optional)</label>
+                    <input type="text" class="form-input" placeholder="What's this for?">
+                </div>
+                <button type="submit" class="submit-btn">Send Money</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('transferModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('transferModal').classList.remove('active');
+        }
+        function handleTransfer(e) {
+            e.preventDefault();
+            alert('💸 Transfer successful!\n\nThis is a demo - no real money was transferred.');
+            closeModal();
+        }
+
+        // Animate balance on load
+        window.onload = () => {
+            const balanceEl = document.querySelector('.balance-amount');
+            const target = 24562.80;
+            let current = 0;
+            const increment = target / 50;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                balanceEl.textContent = '$' + current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }, 30);
+        };
+    </script>
+</body>
+</html>

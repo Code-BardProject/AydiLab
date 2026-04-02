@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonicWave - Music Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #111;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-section { margin-bottom: 30px; }
+        .nav-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 15px;
+            padding-left: 12px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.7);
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .nav-item.active { background: rgba(29, 185, 84, 0.15); color: #1db954; }
+        .nav-icon { font-size: 1.3rem; }
+        .back-link {
+            margin-top: auto;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            padding-bottom: 120px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 25px;
+            width: 350px;
+        }
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            outline: none;
+        }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        /* Featured */
+        .featured-section { margin-bottom: 40px; }
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .featured-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 16px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        .featured-art {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .featured-info { flex: 1; }
+        .featured-label {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .featured-title { font-size: 3rem; font-weight: 700; margin-bottom: 15px; }
+        .featured-artist { font-size: 1.2rem; opacity: 0.8; margin-bottom: 25px; }
+        .featured-actions { display: flex; gap: 15px; }
+        .play-btn {
+            padding: 15px 40px;
+            background: #1db954;
+            border: none;
+            border-radius: 30px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s;
+        }
+        .play-btn:hover { transform: scale(1.05); }
+        .save-btn {
+            padding: 15px 30px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Categories */
+        .categories { margin-bottom: 40px; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .category-card {
+            height: 200px;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .category-card:hover { transform: translateY(-5px); }
+        .category-title { font-size: 1.5rem; font-weight: 700; }
+        .category-icon {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 6rem;
+            transform: rotate(25deg);
+        }
+
+        /* Playlist */
+        .playlist-section { margin-bottom: 40px; }
+        .song-list { display: flex; flex-direction: column; gap: 8px; }
+        .song-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .song-row:hover { background: rgba(255,255,255,0.1); }
+        .song-row.active { background: rgba(29, 185, 84, 0.2); }
+        .song-number {
+            width: 30px;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+        }
+        .song-row.active .song-number { color: #1db954; }
+        .song-art {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .song-info { flex: 1; }
+        .song-title { font-weight: 500; margin-bottom: 3px; }
+        .song-artist { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .song-album { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .song-duration { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+
+        /* Player Bar */
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            background: #181818;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .player-track {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 250px;
+        }
+        .player-art {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        .player-info h4 { font-weight: 500; margin-bottom: 3px; }
+        .player-info p { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+        .player-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .control-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .control-btn:hover { color: #fff; }
+        .control-btn.play {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .progress-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .time { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+        .progress-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 30%;
+            background: #fff;
+            border-radius: 2px;
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .progress-track:hover .progress-fill::after { opacity: 1; }
+        .player-volume {
+            width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 1200px) {
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .player-bar { left: 0; }
+            .featured-card { flex-direction: column; text-align: center; }
+            .featured-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">🎵 SonicWave</div>
+            <div class="nav-section">
+                <div class="nav-title">Menu</div>
+                <div class="nav-item active">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🔍</span>
+                    Search
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📚</span>
+                    Your Library
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Playlists</div>
+                <div class="nav-item">
+                    <span class="nav-icon">💚</span>
+                    Liked Songs
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🎸</span>
+                    Rock Classics
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🎹</span>
+                    Jazz Vibes
+                </div>
+            </div>
+            <a href="../index.html#projects" class="back-link">← Back to Projects</a>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search songs, artists, albums...">
+                </div>
+                <div class="user-menu">
+                    <button class="control-btn">🔔</button>
+                    <div class="user-badge">
+                        <div class="user-avatar">👤</div>
+                        <span>User</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="featured-section">
+                <div class="featured-card">
+                    <div class="featured-art">🎸</div>
+                    <div class="featured-info">
+                        <div class="featured-label">Featured Playlist</div>
+                        <h1 class="featured-title">Rock Classics</h1>
+                        <p class="featured-artist">The greatest rock songs of all time. Cover: Led Zeppelin, Queen, Eagles & more.</p>
+                        <div class="featured-actions">
+                            <button class="play-btn" onclick="togglePlay()">▶ Play</button>
+                            <button class="save-btn">💚 Save to Library</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="categories">
+                <h2 class="section-title">Browse Categories</h2>
+                <div class="category-grid">
+                    <div class="category-card" style="background: #e91e63;">
+                        <div class="category-title">Pop</div>
+                        <div class="category-icon">🎤</div>
+                    </div>
+                    <div class="category-card" style="background: #9c27b0;">
+                        <div class="category-title">Hip Hop</div>
+                        <div class="category-icon">🎧</div>
+                    </div>
+                    <div class="category-card" style="background: #ff9800;">
+                        <div class="category-title">Rock</div>
+                        <div class="category-icon">🎸</div>
+                    </div>
+                    <div class="category-card" style="background: #4caf50;">
+                        <div class="category-title">Jazz</div>
+                        <div class="category-icon">🎺</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="playlist-section">
+                <h2 class="section-title">Now Playing</h2>
+                <div class="song-list">
+                    <div class="song-row active" onclick="playSong(this)">
+                        <div class="song-number">▶</div>
+                        <div class="song-art">🎸</div>
+                        <div class="song-info">
+                            <div class="song-title">Hotel California</div>
+                            <div class="song-artist">Eagles</div>
+                        </div>
+                        <div class="song-album">Hotel California</div>
+                        <div class="song-duration">6:30</div>
+                    </div>
+                    <div class="song-row" onclick="playSong(this)">
+                        <div class="song-number">2</div>
+                        <div class="song-art">🎸</div>
+                        <div class="song-info">
+                            <div class="song-title">Stairway to Heaven</div>
+                            <div class="song-artist">Led Zeppelin</div>
+                        </div>
+                        <div class="song-album">Led Zeppelin IV</div>
+                        <div class="song-duration">8:02</div>
+                    </div>
+                    <div class="song-row" onclick="playSong(this)">
+                        <div class="song-number">3</div>
+                        <div class="song-art">🎸</div>
+                        <div class="song-info">
+                            <div class="song-title">Bohemian Rhapsody</div>
+                            <div class="song-artist">Queen</div>
+                        </div>
+                        <div class="song-album">A Night at the Opera</div>
+                        <div class="song-duration">5:55</div>
+                    </div>
+                    <div class="song-row" onclick="playSong(this)">
+                        <div class="song-number">4</div>
+                        <div class="song-art">🎸</div>
+                        <div class="song-info">
+                            <div class="song-title">Sweet Child O' Mine</div>
+                            <div class="song-artist">Guns N' Roses</div>
+                        </div>
+                        <div class="song-album">Appetite for Destruction</div>
+                        <div class="song-duration">5:03</div>
+                    </div>
+                    <div class="song-row" onclick="playSong(this)">
+                        <div class="song-number">5</div>
+                        <div class="song-art">🎸</div>
+                        <div class="song-info">
+                            <div class="song-title">Free Bird</div>
+                            <div class="song-artist">Lynyrd Skynyrd</div>
+                        </div>
+                        <div class="song-album">Pronounced</div>
+                        <div class="song-duration">9:08</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="player-bar">
+            <div class="player-track">
+                <div class="player-art" id="player-art">🎸</div>
+                <div class="player-info">
+                    <h4 id="player-title">Hotel California</h4>
+                    <p id="player-artist">Eagles</p>
+                </div>
+                <button class="control-btn">💚</button>
+            </div>
+            <div class="player-controls">
+                <div class="control-buttons">
+                    <button class="control-btn">🔀</button>
+                    <button class="control-btn">⏮</button>
+                    <button class="control-btn play" id="playBtn" onclick="togglePlay()">▶</button>
+                    <button class="control-btn">⏭</button>
+                    <button class="control-btn">🔁</button>
+                </div>
+                <div class="progress-bar">
+                    <span class="time">1:24</span>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress"></div>
+                    </div>
+                    <span class="time">6:30</span>
+                </div>
+            </div>
+            <div class="player-volume">
+                <button class="control-btn">🔊</button>
+                <div class="progress-track" style="width: 100px;">
+                    <div class="progress-fill" style="width: 70%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let progress = 30;
+        let interval;
+
+        const songs = [
+            { title: 'Hotel California', artist: 'Eagles', emoji: '🎸' },
+            { title: 'Stairway to Heaven', artist: 'Led Zeppelin', emoji: '🎸' },
+            { title: 'Bohemian Rhapsody', artist: 'Queen', emoji: '🎸' },
+            { title: "Sweet Child O' Mine", artist: "Guns N' Roses", emoji: '🎸' },
+            { title: 'Free Bird', artist: 'Lynyrd Skynyrd', emoji: '🎸' }
+        ];
+
+        function togglePlay() {
+            const playBtn = document.getElementById('playBtn');
+            isPlaying = !isPlaying;
+            playBtn.textContent = isPlaying ? '⏸' : '▶';
+            
+            if (isPlaying) {
+                interval = setInterval(() => {
+                    progress += 0.5;
+                    if (progress > 100) progress = 0;
+                    document.getElementById('progress').style.width = progress + '%';
+                }, 1000);
+            } else {
+                clearInterval(interval);
+            }
+        }
+
+        function playSong(element) {
+            document.querySelectorAll('.song-row').forEach(row => {
+                row.classList.remove('active');
+                row.querySelector('.song-number').textContent = row.dataset.index || '';
+            });
+            
+            element.classList.add('active');
+            element.querySelector('.song-number').textContent = '▶';
+            
+            const title = element.querySelector('.song-title').textContent;
+            const artist = element.querySelector('.song-artist').textContent;
+            const index = Array.from(element.parentElement.children).indexOf(element);
+            
+            document.getElementById('player-title').textContent = title;
+            document.getElementById('player-artist').textContent = artist;
+            document.getElementById('player-art').textContent = songs[index].emoji;
+            
+            progress = 0;
+            document.getElementById('progress').style.width = '0%';
+            
+            if (!isPlaying) togglePlay();
+        }
+
+        // Set initial indices
+        document.querySelectorAll('.song-row').forEach((row, i) => {
+            row.dataset.index = i + 1;
+        });
+    </script>
+</body>
+</html>

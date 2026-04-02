@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare+ - Patient Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 35px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #10b981;
+        }
+        .nav-section { margin-bottom: 25px; }
+        .nav-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 4px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        .nav-icon { font-size: 1.2rem; }
+        .back-link {
+            margin-top: auto;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 25px 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .welcome h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        .welcome p { color: rgba(255,255,255,0.5); }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .emergency-btn {
+            padding: 12px 24px;
+            background: #ef4444;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 25px;
+        }
+        .patient-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+        .patient-info { flex: 1; }
+        .patient-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 8px; }
+        .patient-details {
+            display: flex;
+            gap: 20px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .vital-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .vital-icon { font-size: 1.5rem; margin-bottom: 10px; }
+        .vital-value { font-size: 1.5rem; font-weight: 700; color: #10b981; margin-bottom: 5px; }
+        .vital-label { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-title { font-size: 1.2rem; font-weight: 600; }
+        .add-btn {
+            padding: 8px 16px;
+            background: #10b981;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Appointment */
+        .appointment-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .appointment-date {
+            width: 60px;
+            text-align: center;
+        }
+        .date-day { font-size: 1.5rem; font-weight: 700; color: #10b981; }
+        .date-month { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+        .appointment-info { flex: 1; }
+        .doctor-name { font-weight: 600; margin-bottom: 4px; }
+        .appointment-type { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .appointment-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-confirmed { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        /* Medication */
+        .medication-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .med-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: rgba(139, 92, 246, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .med-info { flex: 1; }
+        .med-name { font-weight: 600; margin-bottom: 4px; }
+        .med-dose { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .med-time {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 1100px) {
+            .two-column { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .vitals-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">🏥 HealthCare+</div>
+            <div class="nav-section">
+                <div class="nav-title">Patient</div>
+                <div class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    Appointments
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">💊</span>
+                    Medications
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    Medical Records
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Services</div>
+                <div class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    Messages
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📹</span>
+                    Telemedicine
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    Billing
+                </div>
+            </div>
+            <a href="../index.html#projects" class="back-link">← Back to Projects</a>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="welcome">
+                    <h1>Welcome back, Michael! 👋</h1>
+                    <p>How are you feeling today?</p>
+                </div>
+                <div class="header-actions">
+                    <button class="emergency-btn" onclick="alert('🚨 Emergency services contacted. Stay calm and wait for assistance.')">🚨 Emergency</button>
+                    <div class="user-badge">
+                        <div class="user-avatar">👨</div>
+                        <span>Michael T.</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="profile-card">
+                <div class="patient-avatar">👨</div>
+                <div class="patient-info">
+                    <div class="patient-name">Michael Thompson</div>
+                    <div class="patient-details">
+                        <span>42 years old</span>
+                        <span>•</span>
+                        <span>Male</span>
+                        <span>•</span>
+                        <span>ID: #45829</span>
+                        <span>•</span>
+                        <span>Blood Type: A+</span>
+                    </div>
+                    <div class="vitals-grid">
+                        <div class="vital-card">
+                            <div class="vital-icon">🩺</div>
+                            <div class="vital-value">120/80</div>
+                            <div class="vital-label">Blood Pressure</div>
+                        </div>
+                        <div class="vital-card">
+                            <div class="vital-icon">❤️</div>
+                            <div class="vital-value">72</div>
+                            <div class="vital-label">Heart Rate (bpm)</div>
+                        </div>
+                        <div class="vital-card">
+                            <div class="vital-icon">🌡️</div>
+                            <div class="vital-value">98.6°F</div>
+                            <div class="vital-label">Temperature</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📅 Upcoming Appointments</h3>
+                        <button class="add-btn" onclick="alert('Book appointment feature - opens booking form')">+ Book</button>
+                    </div>
+                    <div class="appointment-list">
+                        <div class="appointment-item">
+                            <div class="appointment-date">
+                                <div class="date-day">15</div>
+                                <div class="date-month">APR</div>
+                            </div>
+                            <div class="appointment-info">
+                                <div class="doctor-name">Dr. Sarah Williams</div>
+                                <div class="appointment-type">Cardiology Checkup • 10:00 AM</div>
+                            </div>
+                            <span class="appointment-status status-confirmed">Confirmed</span>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-date">
+                                <div class="date-day">22</div>
+                                <div class="date-month">APR</div>
+                            </div>
+                            <div class="appointment-info">
+                                <div class="doctor-name">Dr. James Chen</div>
+                                <div class="appointment-type">Annual Physical • 2:30 PM</div>
+                            </div>
+                            <span class="appointment-status status-pending">Pending</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💊 Medications</h3>
+                        <button class="add-btn">+ Refill</button>
+                    </div>
+                    <div class="medication-list">
+                        <div class="medication-item">
+                            <div class="med-icon">💊</div>
+                            <div class="med-info">
+                                <div class="med-name">Lisinopril</div>
+                                <div class="med-dose">10mg • Once daily</div>
+                            </div>
+                            <span class="med-time">8:00 AM</span>
+                        </div>
+                        <div class="medication-item">
+                            <div class="med-icon">💊</div>
+                            <div class="med-info">
+                                <div class="med-name">Metformin</div>
+                                <div class="med-dose">500mg • Twice daily</div>
+                            </div>
+                            <span class="med-time">8:00 AM</span>
+                        </div>
+                        <div class="medication-item">
+                            <div class="med-icon">💊</div>
+                            <div class="med-info">
+                                <div class="med-name">Atorvastatin</div>
+                                <div class="med-dose">20mg • Once nightly</div>
+                            </div>
+                            <span class="med-time">9:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

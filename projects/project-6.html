@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - SaaS Project Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #1e293b;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 35px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #8b5cf6;
+        }
+        .workspace {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .workspace-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #8b5cf6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .workspace-name { font-weight: 600; font-size: 0.9rem; }
+        .nav-section { margin-bottom: 20px; }
+        .nav-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+        .nav-icon { font-size: 1.1rem; }
+        .back-link {
+            margin-top: auto;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-x: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .project-title { font-size: 1.5rem; font-weight: 600; }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.5);
+        }
+        .search-box input {
+            background: none;
+            border: none;
+            color: #fff;
+            outline: none;
+            width: 180px;
+        }
+        .members {
+            display: flex;
+            align-items: center;
+        }
+        .member-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: -8px;
+            border: 2px solid #0f172a;
+        }
+        .share-btn {
+            padding: 10px 20px;
+            background: #8b5cf6;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Board */
+        .board {
+            display: flex;
+            gap: 20px;
+            min-width: 900px;
+        }
+        .column {
+            width: 300px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .column-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .column-count {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        .task-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: grab;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .task-card.high { border-left-color: #ef4444; }
+        .task-card.medium { border-left-color: #f59e0b; }
+        .task-card.low { border-left-color: #10b981; }
+        .task-labels {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .task-label {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .task-label.design { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .task-label.dev { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .task-label.bug { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .task-label.feature { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .task-title { font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-priority {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .task-priority.high { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .task-priority.medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .task-priority.low { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .task-assignees {
+            display: flex;
+        }
+        .task-assignee {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            margin-left: -6px;
+            border: 2px solid #1e293b;
+        }
+        .add-task-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 2px dashed rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .add-task-btn:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .board { flex-direction: column; min-width: auto; }
+            .column { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">🚀 TaskMaster</div>
+            <div class="workspace">
+                <div class="workspace-icon">TC</div>
+                <div class="workspace-name">TechCorp Inc.</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Main</div>
+                <div class="nav-item active">
+                    <span class="nav-icon">📋</span>
+                    Board
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    Timeline
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📁</span>
+                    Files
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    Messages
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Settings</div>
+                <div class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    Members
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </div>
+            </div>
+            <a href="../index.html#projects" class="back-link">← Back to Projects</a>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <h1 class="project-title">Product Launch Q2 2024</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Search tasks...">
+                    </div>
+                    <div class="members">
+                        <div class="member-avatar">JD</div>
+                        <div class="member-avatar">AS</div>
+                        <div class="member-avatar">MK</div>
+                        <div class="member-avatar">+2</div>
+                    </div>
+                    <button class="share-btn">Share</button>
+                </div>
+            </header>
+
+            <div class="board">
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            📋 To Do
+                            <span class="column-count">4</span>
+                        </div>
+                        <span style="cursor: pointer;">⋯</span>
+                    </div>
+                    <div class="tasks">
+                        <div class="task-card high" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label design">DESIGN</span>
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Design system architecture and component library</div>
+                            <div class="task-footer">
+                                <span class="task-priority high">HIGH</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card medium" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">API documentation and endpoint testing</div>
+                            <div class="task-footer">
+                                <span class="task-priority medium">MEDIUM</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">AS</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card medium" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Unit tests setup and CI/CD pipeline</div>
+                            <div class="task-footer">
+                                <span class="task-priority medium">MEDIUM</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">MK</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card low" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label feature">FEATURE</span>
+                            </div>
+                            <div class="task-title">User onboarding flow redesign</div>
+                            <div class="task-footer">
+                                <span class="task-priority low">LOW</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="addTask(this)">+ Add Task</button>
+                </div>
+
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            🔄 In Progress
+                            <span class="column-count">3</span>
+                        </div>
+                        <span style="cursor: pointer;">⋯</span>
+                    </div>
+                    <div class="tasks">
+                        <div class="task-card high" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Frontend components implementation</div>
+                            <div class="task-footer">
+                                <span class="task-priority high">HIGH</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">SM</div>
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card medium" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Database schema design and migration</div>
+                            <div class="task-footer">
+                                <span class="task-priority medium">MEDIUM</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">AS</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card low" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label design">DESIGN</span>
+                            </div>
+                            <div class="task-title">Mobile responsive mockups</div>
+                            <div class="task-footer">
+                                <span class="task-priority low">LOW</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">MK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="addTask(this)">+ Add Task</button>
+                </div>
+
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            👀 Review
+                            <span class="column-count">2</span>
+                        </div>
+                        <span style="cursor: pointer;">⋯</span>
+                    </div>
+                    <div class="tasks">
+                        <div class="task-card medium" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Authentication system integration</div>
+                            <div class="task-footer">
+                                <span class="task-priority medium">MEDIUM</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">AS</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card low" draggable="true">
+                            <div class="task-labels">
+                                <span class="task-label bug">BUG</span>
+                            </div>
+                            <div class="task-title">Fix navigation menu on mobile</div>
+                            <div class="task-footer">
+                                <span class="task-priority low">LOW</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="addTask(this)">+ Add Task</button>
+                </div>
+
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            ✅ Done
+                            <span class="column-count">2</span>
+                        </div>
+                        <span style="cursor: pointer;">⋯</span>
+                    </div>
+                    <div class="tasks">
+                        <div class="task-card low" draggable="true" style="opacity: 0.6;">
+                            <div class="task-labels">
+                                <span class="task-label dev">DEV</span>
+                            </div>
+                            <div class="task-title">Project setup and repository init</div>
+                            <div class="task-footer">
+                                <span class="task-priority low">DONE</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">AS</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-card low" draggable="true" style="opacity: 0.6;">
+                            <div class="task-labels">
+                                <span class="task-label design">DESIGN</span>
+                            </div>
+                            <div class="task-title">Requirements analysis completed</div>
+                            <div class="task-footer">
+                                <span class="task-priority low">DONE</span>
+                                <div class="task-assignees">
+                                    <div class="task-assignee">MK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="addTask(this)">+ Add Task</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let taskCount = 11;
+        
+        function addTask(btn) {
+            const title = prompt('Enter task title:');
+            if (!title) return;
+            
+            const column = btn.parentElement;
+            const tasksContainer = column.querySelector('.tasks');
+            const countEl = column.querySelector('.column-count');
+            
+            const task = document.createElement('div');
+            task.className = 'task-card medium';
+            task.draggable = true;
+            task.innerHTML = `
+                <div class="task-labels">
+                    <span class="task-label dev">DEV</span>
+                </div>
+                <div class="task-title">${title}</div>
+                <div class="task-footer">
+                    <span class="task-priority medium">MEDIUM</span>
+                    <div class="task-assignees">
+                        <div class="task-assignee">ME</div>
+                    </div>
+                </div>
+            `;
+            
+            tasksContainer.appendChild(task);
+            countEl.textContent = column.querySelectorAll('.task-card').length;
+            taskCount++;
+        }
+
+        // Drag and drop functionality
+        let draggedTask = null;
+        
+        document.querySelectorAll('.task-card').forEach(task => {
+            task.addEventListener('dragstart', function() {
+                draggedTask = this;
+                this.style.opacity = '0.5';
+            });
+            
+            task.addEventListener('dragend', function() {
+                this.style.opacity = '1';
+                draggedTask = null;
+                updateCounts();
+            });
+        });
+        
+        document.querySelectorAll('.column').forEach(column => {
+            column.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            column.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (draggedTask) {
+                    const tasksContainer = this.querySelector('.tasks');
+                    tasksContainer.appendChild(draggedTask);
+                }
+            });
+        });
+        
+        function updateCounts() {
+            document.querySelectorAll('.column').forEach(column => {
+                const count = column.querySelectorAll('.task-card').length;
+                column.querySelector('.column-count').textContent = count;
+            });
+        }
+    </script>
+</body>
+</html>
