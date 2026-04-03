@@ -487,7 +487,7 @@ class HeroAnimations {
 }
 
 // ========================================
-// STATS COUNTER
+// STATS COUNTER (without scroll trigger)
 // ========================================
 class StatsCounter {
     constructor() {
@@ -496,15 +496,10 @@ class StatsCounter {
     }
     
     init() {
+        // Animate immediately without scroll trigger
         this.stats.forEach(stat => {
             const target = parseInt(stat.dataset.count);
-            
-            ScrollTrigger.create({
-                trigger: stat,
-                start: 'top 85%',
-                once: true,
-                onEnter: () => this.animate(stat, target)
-            });
+            this.animate(stat, target);
         });
     }
     
@@ -524,37 +519,20 @@ class StatsCounter {
 }
 
 // ========================================
-// SCROLL REVEAL ANIMATIONS
+// SCROLL REVEAL ANIMATIONS (DISABLED)
 // ========================================
 class ScrollReveal {
     constructor() {
+        // Disabled - elements are now visible by default
         this.init();
     }
     
     init() {
+        // Make all reveal elements visible immediately
         const reveals = document.querySelectorAll('[data-scroll-reveal]');
-        
         reveals.forEach(el => {
-            const delay = parseFloat(el.dataset.delay) || 0;
-            
-            gsap.fromTo(el, 
-                {
-                    opacity: 0,
-                    y: 40
-                },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.8,
-                    delay: delay,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 85%',
-                        toggleActions: 'play none none none'
-                    }
-                }
-            );
+            el.style.opacity = '1';
+            el.style.transform = 'none';
         });
     }
 }
@@ -605,7 +583,7 @@ class ServiceCards {
 }
 
 // ========================================
-// PROCESS STEPS ANIMATION
+// PROCESS STEPS ANIMATION (WITHOUT SCROLL)
 // ========================================
 class ProcessSteps {
     constructor() {
@@ -614,47 +592,16 @@ class ProcessSteps {
     }
     
     init() {
+        // Make steps visible immediately without scroll animation
         this.steps.forEach((step, index) => {
+            step.style.opacity = '1';
+            step.style.transform = 'none';
+            
             const number = step.querySelector('.step-number');
-            const content = step.querySelector('.step-content');
-            
-            gsap.fromTo(step,
-                {
-                    opacity: 0,
-                    x: -30
-                },
-                {
-                    opacity: 1,
-                    x: 0,
-                    duration: 0.8,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: step,
-                        start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
-                }
-            );
-            
-            // Number counter animation
-            gsap.fromTo(number,
-                {
-                    scale: 0.5,
-                    opacity: 0
-                },
-                {
-                    scale: 1,
-                    opacity: 0.5,
-                    duration: 0.6,
-                    delay: index * 0.1,
-                    ease: 'back.out(1.7)',
-                    scrollTrigger: {
-                        trigger: step,
-                        start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
-                }
-            );
+            if (number) {
+                number.style.opacity = '0.5';
+                number.style.transform = 'none';
+            }
         });
     }
 }
